@@ -26,6 +26,8 @@ until [ ! -f Screen*.png ]; do mv ./Screen*.png ~/Pictures/Unsorted/Screenshots;
 until [ ! -f *.gif ]; do mv ./*.gif ~/Pictures/Unsorted; done
 until [ ! -f *.jpg ]; do mv ./*.jpg ~/Pictures/Unsorted; done
 until [ ! -f *.jpeg ]; do mv ./*.jpeg ~/Pictures/Unsorted; done
+for file in *.avif; do ffmpeg -i "$file" "$file".png; done
+rm ./*.avif #CONVERTS .AVIF TO .PNG AND REMOVES REMAINING .AVIF FILES
 for file in *.bmp; do ffmpeg -i "$file" "$file".png; done
 rm ./*.bmp #CONVERTS .BMP TO .PNG AND REMOVES REMAINING .BMP FILES
 for file in *.webp; do ffmpeg -i "$file" "$file".png; done
@@ -40,6 +42,8 @@ until [ ! -f *.m4b ]; do mv ./*.m4b ~/Music/Unsorted; done
 until [ ! -f *.ogg ]; do mv ./*.ogg ~/Music/Unsorted; done
 for file in *.m4a; do ffmpeg -i "$file" "$file".wav; done
 rm ./*.m4a #CONVERTS .M4A TO .WAV AND REMOVES REMAINING .M4A FILES
+for file in *.mpga; do ffmpeg -i "$file" "$file".mp3; done
+rm ./*.mpga #CONVERTS .MPGA TO .MP3 AND REMOVES REMAINING .MPGA FILES
 until [ ! -f *.wav ]; do mv ./*.wav ~/Music/Unsorted; done
 
 #VIDEO
@@ -57,11 +61,13 @@ until [ ! -f *.mp4 ]; do mv ./*.mp4 ~/Videos/Unsorted; done
 until [ ! -f *.gba ]; do mv ./*.gba ~/Games/ROMs/Gameboy\ Advance; done
 until [ ! -f *.nes ]; do mv ./*.nes ~/Games/ROMs; done
 until [ ! -f *.sav ]; do mv ./*.sav ~/Games/ROMs/Save\ Files; done
+until [ ! -f *.sav ]; do mv ./*.oops ~/Games/ROMs/Save\ Files; done
 until [ ! -f *.sfc ]; do mv ./*.sfc ~/Games/ROMs; done
 until [ ! -f *.smc ]; do mv ./*.smc ~/Games/ROMs/Super\ Nintendo; done
+until [ ! -f *.scm ]; do mv ./*.scm ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads'; done
+until [ ! -f *.scx ]; do mv ./*.scx ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/BroodWar/Downloads'; done
 
 #MISCELLANEOUS
-until [ ! -f *.avif ]; do mv ./*.avif ~/Desktop/Unconvertable; done
 until [ ! -f *.flv ]; do mv ./*.flv ~/Desktop/Unconvertable; done
 until [ ! -f *.graffle ]; do mv ./*.graffle ~/Desktop/Unconvertable; done
 until [ ! -f *.icns ]; do mv ./*.icns ~/Desktop/Unconvertable; done
