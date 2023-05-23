@@ -3,7 +3,7 @@
 #REQUIRES PERL & FFMPEG
 ################################################################################
 #SCHEDULES DESKTOPCLEANUP EVERY 15 MINUTES W/ CRONTAB
-if sudo grep "desktopcleanup.sh" "/var/spool/cron/crontabs/$USER"
+if crontab -l | grep "desktopcleanup.sh"
 then
   echo "Your Desktop Cleanup is scheduled!"
 else
