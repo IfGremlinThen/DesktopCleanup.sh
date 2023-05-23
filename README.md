@@ -10,20 +10,15 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 This script requires you to have both ffmpeg and perl which can be installed with the following Terminal command:
 ```bash
 sudo apt install ffmpeg perl
-
 ```
-
 ## Installation
 Installation is very simple, just drag-and-drop this script into your ~/Documents folder and run the following Terminal command:
 ```bash
 bash ~/Documents/desktopcleanup.sh
-
 ```
-
 ### Uninstall
 You can easily remove DesktopCleanup.sh from your system by trashing the .sh file in your ~/Documents folder and running the following Terminal command:
 ```bash
 crontab -r
-
 ```
 ***Warning!:*** *This will reset `crontab` to it's default settings and overwrite any other jobs assigned to it.  You can check all of `crontab`'s jobs by running `crontab -l`.*
