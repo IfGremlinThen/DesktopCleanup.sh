@@ -12,6 +12,7 @@ This script requires you to have both ffmpeg and perl which can be installed wit
 sudo apt install ffmpeg perl
 
 ```
+
 ## Installation
 Installation is very simple, just drag-and-drop this script into your ~/Documents folder and run the following Terminal command:
 ```bash
