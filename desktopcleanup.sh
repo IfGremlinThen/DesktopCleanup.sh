@@ -3,6 +3,7 @@
 #REQUIRES PERL & FFMPEG
 ################################################################################
 #SCHEDULES DESKTOPCLEANUP EVERY 15 MINUTES W/ CRONTAB
+echo "STEP: CRONTAB"
 if crontab -l | grep "desktopcleanup.sh"
 then
   echo "Your Desktop Cleanup is scheduled!"
@@ -13,141 +14,298 @@ fi
 #crontab -r #FOR UNINSTALL
 ################################################################################
 cd ~/Desktop
+echo "STEP: NULLGLOB"
+shopt -s nullglob #IGNORE EMPTY WILDCARDS
 ################################################################################
 #RENAMES FILES WITH FOREIGN MACOS CHARACTERS
+echo "STEP: RENAME"
 rename -f 's///g' ./*
 rename -f 's// - /g' ./*
 rename -f 's//|/g' ./*
 rename -f 's//?/g' ./*
 rename -f 's//"/g' ./*
 rename 's/\.([^.]+)$/.\L$1/' *
+
 ################################################################################
-#TEXT
+# TEXT #########################################################################
+echo "STEP: CREATE UNSORTED DOCUMENT DIRECTORIES"
 if [ ! -d ~/Documents/Unsorted ]; then #IF UNSORTED DOCUMENTS FOLDER DOESN'T EXIST, CREATE IT
   mkdir ~/Documents/Unsorted
 fi
-until [ ! -f *.ctb ]; do mv --backup=t ./*.ctb ~/Documents/Unsorted; done
-until [ ! -f *.doc ]; do mv --backup=t ./*.doc ~/Documents/Unsorted; done
-until [ ! -f *.html ]; do mv --backup=t ./*.html ~/Documents/Unsorted; done
-until [ ! -f *.pdf ]; do mv --backup=t ./*.pdf ~/Documents/Unsorted; done
-until [ ! -f *.rtf ]; do mv --backup=t ./*.rtf ~/Documents/Unsorted; done
-until [ ! -f *.txt ]; do mv --backup=t ./*.txt ~/Documents/Unsorted; done
-until [ ! -f *.xlsx ]; do mv --backup=t ./*.xlsx ~/Documents/Unsorted; done
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP DOCUMENTS"
+backupDocuments(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Documents/Unsorted #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupDocuments ./*.ctb ./*.doc ./*.html ./*.pdf ./*.rtf ./*.txt ./*.xlsx
+
 ################################################################################
-#IMAGES
+# IMAGES #######################################################################
+echo "STEP: CREATE PHOTOSHOP & SCREENSHOT DIRECTORIES"
 if [ ! -d ~/Pictures/Unsorted/Screenshots ]; then #IF UNSORTED PICTURES FOLDERS DON'T EXIST, CREATE THEM
   mkdir ~/Pictures/Unsorted ~/Pictures/Unsorted/Screenshots
 fi
 if [ ! -d ~/Pictures/Photoshop ]; then #IF PHOTOSHOP FOLDER DOESN'T EXIST, CREATE IT
   mkdir ~/Pictures/Photoshop
 fi
-until [ ! -f *.gif ]; do mv --backup=t ./*.gif ~/Pictures/Unsorted; done
-until [ ! -f *.jpg ]; do mv --backup=t ./*.jpg ~/Pictures/Unsorted; done
-until [ ! -f *.jpeg ]; do mv --backup=t ./*.jpeg ~/Pictures/Unsorted; done
-until [ ! -f *screen*.png ]; do mv --backup=t ./*screen*.png ~/Pictures/Unsorted/Screenshots; done
-until [ ! -f Screen*.png ]; do mv --backup=t ./Screen*.png ~/Pictures/Unsorted/Screenshots; done
-until [ ! -f *.psd ]; do mv --backup=t ./*.psd ~/Pictures/Photoshop; done
-if [ -f *.avif ]; then #CONVERTS .AVIF TO .PNG AND REMOVES REMAINING .AVIF FILES
-  for file in *.avif; do ffmpeg -i "$file" "$file".png; done
-  until [ ! -f *.avif ]; do rm ./*.avif; done
-fi
-if [ -f *.bmp ]; then #CONVERTS .BMP TO .PNG AND REMOVES REMAINING .BMP FILES
-  for file in *.bmp; do ffmpeg -i "$file" "$file".png; done
-  until [ ! -f *.bmp ]; do rm ./*.bmp; done
-fi
-if [ -f *.webp ]; then #CONVERTS .WEBP TO .PNG AND REMOVES REMAINING .WEBP FILES
-  for file in *.webp; do ffmpeg -i "$file" "$file".png; done
-  until [ ! -f *.webp ]; do rm ./*.webp; done
-fi
-until [ ! -f *.png ]; do mv --backup=t ./*.png ~/Pictures/Unsorted; done #MOVES ALL CONVERTED .PNGs
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: CONVERT TO .PNG"
+convertToPNG(){
+  (($#)) || return
+  for file in "$@"; do
+    ffmpeg -i "$file" "$file.png" && rm "$file"
+  done
+}
+convertToPNG ./*.avif ./*.bmp ./*.webp
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP SCREENSHOTS"
+backupScreenshots(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Pictures/Unsorted/Screenshots #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupScreenshots ./*screen*.png ./Screen*.png
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP PICTURES"
+backupPictures(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Pictures/Unsorted #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupPictures ./*.gif ./*.jpg ./*.jpeg ./*.png
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP PHOTOSHOP"
+backupPhotoshop(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Pictures/Photoshop #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupPhotoshop ./*.psd
+
 ################################################################################
-#AUDIO
+# AUDIO ########################################################################
+echo "STEP: CREATE UNSORTED AUDIO DIRECTORY"
 if [ ! -d ~/Music/Unsorted ]; then #IF UNSORTED MUSIC FOLDER DOESN'T EXIST, CREATE IT
   mkdir ~/Music/Unsorted
 fi
-until [ ! -f *.aiff ]; do mv --backup=t ./*.aiff ~/Music/Unsorted; done
-until [ ! -f *.flac ]; do mv --backup=t ./*.flac ~/Music/Unsorted; done
-until [ ! -f *.mp3 ]; do mv --backup=t ./*.mp3 ~/Music/Unsorted; done
-until [ ! -f *.m4b ]; do mv --backup=t ./*.m4b ~/Music/Unsorted; done
-until [ ! -f *.ogg ]; do mv --backup=t ./*.ogg ~/Music/Unsorted; done
-if [ -f *.m4a ]; then #CONVERTS .M4A TO .WAV AND REMOVES REMAINING .M4A FILES
-  for file in *.m4a; do ffmpeg -i "$file" "$file".wav; done
-  until [ ! -f *.m4a ]; do rm ./*.m4a; done
-fi
-if [ -f *.mpga ]; then #CONVERTS .MPGA TO .MP3 AND REMOVES REMAINING .MPGA FILES
-  for file in *.mpga; do ffmpeg -i "$file" "$file".mp3; done
-  until [ ! -f *.mpga ]; do rm ./*.mpga; done
-fi
-until [ ! -f *.wav ]; do mv --backup=t ./*.wav ~/Music/Unsorted; done #MOVES CONVERTED .WAVs
-until [ ! -f *.mp3 ]; do mv --backup=t ./*.mp3 ~/Music/Unsorted; done #MOVES CONVERTED .MP3s
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: CONVERT TO .WAV"
+convertToWAV(){
+  (($#)) || return
+  for file in "$@"; do
+    ffmpeg -i "$file" "$file.wav" && rm "$file"
+  done
+}
+convertToWAV ./*.m4a ./*.mpga
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP AUDIO"
+backupMusic(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Music/Unsorted #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupMusic ./*.aiff ./*.flac ./*.mp3 ./*.m4b ./*.ogg ./*.wav
+
 ################################################################################
-#VIDEO
+# VIDEO ########################################################################
+echo "STEP: CREATED UNSORTED VIDEOS DIRECTORY"
 if [ ! -d ~/Videos/Unsorted ]; then #IF UNSORTED VIDEOS FOLDER DOESN'T EXIST, CREATE IT
   mkdir ~/Videos/Unsorted
 fi
-until [ ! -f *.3gp ]; do mv --backup=t ./*.3gp ~/Videos/Unsorted; done
-until [ ! -f *.avi ]; do mv --backup=t ./*.avi ~/Videos/Unsorted; done
-until [ ! -f *.mkv ]; do mv --backup=t ./*.mkv ~/Videos/Unsorted; done
-until [ ! -f *.m4v ]; do mv --backup=t ./*.m4v ~/Videos/Unsorted; done
-if [ -f *.mov ]; then #CONVERTS .MOV TO .MP4 AND REMOVES REMAINING .MOV FILES
-  for file in *.mov; do ffmpeg -i "$file" "$file".mp4; done
-  until [ ! -f *.mov ]; do rm ./*.mov; done
-fi
-if [ -f *.webm ]; then #CONVERTS .WEBM TO .MP4 AND REMOVES REMAINING .WEBM FILES
-  for file in *.webm; do ffmpeg -i "$file" "$file".mp4; done
-  until [ ! -f *.webm ]; do rm ./*.webm; done
-fi
-until [ ! -f *.mp4 ]; do mv --backup=t ./*.mp4 ~/Videos/Unsorted; done #MOVES CONVERTED .MP4s
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: CONVERT TO .MP4"
+convertToMP4(){
+  (($#)) || return
+  for file in "$@"; do
+    ffmpeg -i "$file" "$file.mp4" && rm "$file"
+  done
+}
+convertToMP4 ./*.flv ./*.mov ./*.mpg ./*.webm
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP VIDEOS"
+backupVideos(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Videos/Unsorted #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupVideos ./*.3gp ./*.avi ./*.m4v ./*.mkv ./*.mp4
+
 ################################################################################
-#GAMES
+# GAMES ########################################################################
+echo "STEP: CREATE GAME DIRECTORIES"
 if [ ! -d ~/Games/ROMs/Nintendo ]; then #IF NINTENDO GAMES FOLDER DOESN'T EXIST, CREATE IT
-  mkdir ~/Games/ROMs/Nintendo/GBA ~/Games/ROMs/Nintendo/NES ~/Games/ROMs/Nintendo/SNES ~/Games/ROMs/Nintendo/N64 ~/Games/ROMs/Nintendo/DS ~/Games/ROMs/Nintendo/3DS
+  mkdir ~/Games/ROMs/Nintendo/NES ~/Games/ROMs/Nintendo/SNES ~/Games/ROMs/Nintendo/N64 ~/Games/ROMs/Nintendo/GBA ~/Games/ROMs/Nintendo/DS ~/Games/ROMs/Nintendo/3DS
 fi
 if [ ! -d ~/Games/Flash ]; then #IF FLASH GAMES FOLDER DOESN'T EXIST, CREATE IT
   mkdir ~/Games/Flash
 fi
-until [ ! -f *.swf ]; do mv --backup=t ./*.swf ~/Games/Flash; done
-until [ ! -f *.sav ]; do mv --backup=t ./*.sav ~/Games/ROMs/Save\ Files; done
-until [ ! -f *.srm ]; do mv --backup=t ./*.srm ~/Games/ROMs/Save\ Files; done
-until [ ! -f *.oops ]; do mv --backup=t ./*.oops ~/Games/ROMs/Save\ Files; done
-until [ ! -f *.gba ]; do mv --backup=t ./*.gba ~/Games/ROMs/Nintendo/GBA; done
-until [ ! -f *.nes ]; do mv --backup=t ./*.nes ~/Games/ROMs/Nintendo/NES; done
-until [ ! -f *.smc ]; do mv --backup=t ./*.smc ~/Games/ROMs/Nintendo/SNES; done
-until [ ! -f *.sfc ]; do mv --backup=t ./*.sfc ~/Games/ROMs/Nintendo/SNES; done
-until [ ! -f *.n64 ]; do mv --backup=t ./*.n64 ~/Games/ROMs/Nintendo/N64; done
-until [ ! -f *.z64 ]; do mv --backup=t ./*.z64 ~/Games/ROMs/Nintendo/N64; done
-until [ ! -f *.nds ]; do mv --backup=t ./*.nds ~/Games/ROMs/Nintendo/DS; done
-until [ ! -f *.3ds ]; do mv --backup=t ./*.3ds ~/Games/ROMs/Nintendo/3DS; done
+if [ ! -d ~/Games/Text\ Adventures ]; then #IF TEXT ADVENTURE GAMES FOLDER DOESN'T EXIST, CREATE IT
+  mkdir ~/Games/Text\ Adventures
+fi
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP SAVE FILES"
+backupSaveFiles(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Games/ROMs/Save\ Files #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupSaveFiles ./*.sav ./*.srm ./*oops
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP NES ROMS"
+backupNESROMs(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Games/ROMs/Nintendo/NES #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupNESROMs ./*.nes
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP SNES ROMS"
+backupSNESROMs(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Games/ROMs/Nintendo/SNES #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupSNESROMs ./*.smc ./*sfc
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP N64 ROMS"
+backupN64ROMs(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Games/ROMs/Nintendo/N64 #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupN64ROMs ./*.n64 ./*.z64
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP GBA ROMS"
+backupGBAROMs(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Games/ROMs/Nintendo/GBA #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupGBAROMs ./*.gba
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP DS ROMS"
+backupDSROMs(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Games/ROMs/Nintendo/DS #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupDSROMs ./*.nds
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP 3DS ROMS"
+backup3DSROMs(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Games/ROMs/Nintendo/3DS #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backup3DSROMs ./*.3ds
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP FLASH GAMES"
+backupFlashGames(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Games/Flash #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupFlashGames ./*.swf
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP TEXT ADVENTURES"
+backupTextAdventures(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Games/Text\ Adventures #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupTextAdventures ./*.gblorb ./*.z3 ./*.z5 ./*.z8
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP STARCRAFT MAPS"
+backupStarcraftMaps(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads' #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
 if [ -d ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/' ]; then #SKIP IF STARCRAFT MAPS FOLDER DOESN'T EXIST
-  until [ ! -f *.scm ]; do mv --backup=t ./*.scm ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads'; done
-  until [ ! -f *.scx ]; do mv --backup=t ./*.scx ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/BroodWar/Downloads'; done
+  backupStarcraftMaps ./*.scm ./*scx
 fi
 
 ################################################################################
-#APPLICATIONS
+# APPLICATIONS #################################################################
+echo "STEP: CREATE APPLICATIONS DIRECTORY"
 if [ ! -d ~/Applications ]; then #IF APPLICATIONS FOLDER DOESN'T EXIST, CREATE IT
   mkdir ~/Applications
 fi
-until [ ! -f *.appimage ]; do mv --backup=t ./*.appimage ~/Applications; done
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP APPLICATIONS"
+backupApplications(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Applications #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupApplications ./*.appimage ./*.x86_64
+chmod 777 ~/Applications/*
+
 ################################################################################
-#MISCELLANEOUS
+# TORRENTS #####################################################################
+echo "STEP: CREATE TORRENTS DIRECTORY"
+if [ ! -d ~/Downloads/Torrents ]; then #IF TORRENTS FOLDER DOESN'T EXIST, CREATE IT
+  mkdir ~/Downloads/Torrents
+fi
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP TORRENT FILES"
+backupTorrents(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Downloads/Torrents #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupTorrents ./*.torrent
+
+################################################################################
+# MISCELLANEOUS ################################################################
+echo "STEP: CREATE UNCONVERTABLE DIRECTORY"
 if [ ! -d ~/Desktop/Unconvertable ]; then #IF UNCONVERTABLE FOLDER DOESN'T EXIST, CREATE IT
   mkdir ~/Desktop/Unconvertable
 fi
-until [ ! -f *.flv ]; do mv --backup=t ./*.flv ~/Desktop/Unconvertable; done
-until [ ! -f *.graffle ]; do mv --backup=t ./*.graffle ~/Desktop/Unconvertable; done
-until [ ! -f *.icns ]; do mv --backup=t ./*.icns ~/Desktop/Unconvertable; done
-until [ ! -f *.mid ]; do mv --backup=t ./*.mid ~/Desktop/Unconvertable; done
-until [ ! -f *.svg ]; do mv --backup=t ./*.svg ~/Desktop/Unconvertable; done
-################################################################################
-#RENAME HIDDEN BACKUPS CREATED BY MV
-cd ~/Documents/Unsorted && rename -f 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
-cd ~/Pictures/Unsorted && rename -f 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
-cd ~/Music/Unsorted && rename -f 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
-cd ~/Videos/Unsorted && rename -f 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
-cd ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads' && rename 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
-cd ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/BroodWar/Downloads' && rename 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
-cd
-################################################################################
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+echo "STEP: BACKUP UNCONVERTABLE FILES"
+backupUnconvertables(){
+    (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
+     for file in "$@"; do
+       mv --backup=t "$@" ~/Desktop/Unconvertable #MOVES FILETYPES GIVEN TO THE FUNCTION
+     done
+}
+backupUnconvertables ./*.graffle ./*.icns ./*.m4p ./*.mid ./*.numbers ./*.svg
 
+################################################################################
+# RENAME HIDDEN BACKUPS CREATED BY MV ##########################################
+#echo "STEP: RENAME BACKUP FILES"
+#cd ~/Documents/Unsorted && rename -f 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
+#cd ~/Pictures/Unsorted && rename -f 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
+#cd ~/Music/Unsorted && rename -f 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
+#cd ~/Videos/Unsorted && rename -f 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
+#cd ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads' && rename 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
+#cd ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/BroodWar/Downloads' && rename 's/((?:\..+)?)\.~(\d+)~$/-$2$1/' *.~*~
+
+################################################################################
+echo "STEP: FINISHING UP"
+cd
 #touch ~/Desktop/cleanupreceipt.txt
