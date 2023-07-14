@@ -7,15 +7,9 @@ As of **Version 1.2**, DesktopCleanup.sh schedules itself to run every 15 minute
 DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 'Unsorted' folders in each of your main Home folders (audio files will be moved to ~/Music/Unsorted, video will be moved to ~/Videos/Unsorted, etc).  It also uses `perl` to bulk rename files with foreign characters found in MacOS filenames and `ffmpeg` to convert less popular lossy file formats into more universal and less lossy (or lossless) file formats.  Below is a complete list of features:
 
 ## Features
-**Automates**
-- itself as a `crontab` job to run every 15 minutes
-
-**Renames**
-- files with foreign MacOS characters
-
-**Installs**
-- `.otf` & `.ttf` fonts to _~/.local/share/fonts_
-
+**Automates** itself as a `crontab` job to run every 15 minutes
+**Renames** files with foreign MacOS characters
+**Installs** `.otf` & `.ttf` fonts to _~/.local/share/fonts_
 **Converts**
 - `.avif`, `.bmp`, & `.webp` to `.png`
 - `.m4a` & `.mpga` to `.wav`
