@@ -6,7 +6,7 @@ The purpose of this script is to perform basic cleanup of your Desktop in a way 
 
 DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 'Unsorted' folders in each of your main Home folders (audio files will be moved to ~/Music/Unsorted, video will be moved to ~/Videos/Unsorted, etc).  It also uses `perl` to bulk rename files with foreign characters found in MacOS filenames and `ffmpeg` to convert less popular lossy file formats into more universal and less lossy (or lossless) file formats.  Below is a complete list of features:
 
-[x] <sub>Tested on **Linux Mint 21.1**.</sub>
+- [x] <sub>Tested on **Linux Mint 21.1**.</sub>
 
 ## Features
 - **Automates** itself as a `crontab` job to run every 15 minutes
