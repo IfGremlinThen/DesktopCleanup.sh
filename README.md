@@ -1,5 +1,6 @@
-# DesktopCleanup.sh
 Tested on Linux Mint 21.1.
+
+# DesktopCleanup.sh
 
 A self-automating bash script for organizing files on your Ubuntu-based GNU-Linux desktop into appropriate folders.
 
@@ -61,4 +62,4 @@ You can easily remove DesktopCleanup.sh from your system by trashing the .sh fil
 ```
 crontab -r
 ```
-***Warning!*** - *This will reset `crontab` to it's default settings and overwrite any other jobs assigned to it.  You can check all of `crontab`'s jobs by running `crontab -l`.*
+***Warning!:*** *This will reset `crontab` to it's default settings and overwrite any other jobs assigned to it.  You can check all of `crontab`'s jobs by running `crontab -l`.*
