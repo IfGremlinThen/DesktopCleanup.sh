@@ -27,8 +27,8 @@ rename -f 's//"/g' ./*
 rename 's/\.([^.]+)$/.\L$1/' *
 
 ################################################################################
-# TEXT #########################################################################
-backupDocuments(){
+# FONTS ########################################################################
+installFonts(){
   (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
   echo "Installing fonts..."
   if [ ! -d ~/.local/share/fonts ]; then mkdir ~/.local/share/fonts; fi
@@ -37,7 +37,7 @@ backupDocuments(){
   done
   fc-cache #UPDATES FONT CACHE
 }
-backupDocuments ./*.otf ./*.ttf
+installFonts ./*.otf ./*.ttf
 
 ################################################################################
 # TEXT #########################################################################
