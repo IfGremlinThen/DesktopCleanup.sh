@@ -16,7 +16,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.divx`, `.flv`, `.mov`, `.mpg`, & `.webm` video to `.mp4`
 - **Moves**
   - `.ctb`, `.doc`, `.html`, `.pdf`, `.rtf`, `.txt`, & `.xlsx` documents to _~/Documents/Unsorted_.
-  - screenshots to _~/Pictures/Unsorted/Screenshots_.
+  - "screenshots" to _~/Pictures/Unsorted/Screenshots_.
   - `.gif`, `.jpg`, `.jpeg`, & `.png` pictures to _~/Pictures/Unsorted_.
   - `.psd` files to _~/Pictures/Photoshop_.
   - `.aiff`, `.flac`, `.mp3`, `.m4b`, `.ogg`, & `.wav` audio to _~/Music
@@ -55,7 +55,7 @@ Installation is very simple, just drag-and-drop this script into your ~/Document
 bash ~/Documents/desktopcleanup.sh
 ```
 
-### Uninstall
+### Uninstallation
 You can easily remove DesktopCleanup.sh from your system by trashing the .sh file in your ~/Documents folder and running the following Terminal command:
 ```
 crontab -r
