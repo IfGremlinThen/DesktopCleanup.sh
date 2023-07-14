@@ -9,24 +9,31 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 ## Features
 **Self-Automated:**
 - Sets itself as a `crontab` job to run every 15 minutes.
+  
 **Renames Foreign Characters:**
 - Bulk renames foreign characters in MacOS filenames.
+  
 **Installs Fonts:**
 - Installs `.otf` & `.ttf` fonts to `~/.local/share/fonts`.
+  
 **Organizes Documents:**
-- Moves `.ctb`, `.doc`, `.html`, `.pdf`, `.rtf`, `.txt`, & `.xlsx` documents to `~/Documents/Unsorted`.  
+- Moves `.ctb`, `.doc`, `.html`, `.pdf`, `.rtf`, `.txt`, & `.xlsx` documents to `~/Documents/Unsorted`.
+  
 **Organizes Pictures:**
 - Converts `.avif`, `.bmp`, & `.webp` to `.png`.
 - Moves`.gif`, `.jpg`, `.jpeg`, & `.png` pictures to `~/Pictures/Unsorted`.
 - Moves `.psd` files to `~/Pictures/Photoshop`
 - Moves screenshots to `~/Pictures/Screenshots`.
+  
 **Organizes Audio:**
 - Converts `.m4a` & `.mpga` to `.wav`.
 - Moves `.aiff`, `.flac`, `.mp3`, `.m4b`, `.ogg`, & `.wav` audio to `~/Music
   /Unsorted`.
+
 **Organizes Video:**
 - Converts `.divx`, `.flv`, `.mov`, `.mpg`, & `.webm` to `.mp4`.
 - Moves `.3gp`, `.avi`, `.m4v`, `.mkv`, & `.mp4` videos to `~/Videos/Unsorted`.
+  
 **Organizes Games:**
 - Moves `.sav`, `.srm`, & `.oops` save files to `~/Games/ROMs/Save Files`.
 - Moves `.nes` NES roms to `~/Games/ROMs/Nintendo/NES`.
@@ -38,22 +45,26 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 - Moves `.swf` Flash games to `~/Games/Flash`.
 - Moves `.gblorb`, `.z3`, `.z5`, & `.z8` text adventures to `~/Games/Text Adventures`.
 - Moves `.scm` & `.scx` Starcraft maps to `~/.wine/drive_c/Program Files (x86)/StarCraft/Maps`.
+  
 **Organizes Applications:**
 - Moves `.appimage` & `.x86_64` apps to `~/Applications`, makes them executable, and links them to the Desktop.
 - Moves `.deb` & `.rpm` packages to `~/Applications/Linux Packages`.
 - Moves `.exe` Windows apps to `~/Applications/Windows`.
 - Moves `.app` MacOS apps to `~/Applications/MacOS`.
+  
 **Organizes Archives:**
 - Moves `.7z`, `.tar.gz`, & `.zip` archives to `~/Documents/Unsorted Archives`.
+  
 **Organizes Torrents:**
 - Moves `.torrent` torrents to `~/Downloads/Torrents`.
+  
 **Collects remaining filetypes:**
 - Moves `.graffle`, `.icns`, `.m4p`, `.mid`, `.numbers`, & `.svg` to `~/Desktop/Unconvertable`.
 
 ## Requirements
 This script requires the following extra packages to be installed:
-`ffmpeg` (file conversion)
-`perl` (file renaming)
+- `ffmpeg` (file conversion)
+- `perl` (file renaming)
 
 They can be installed on Ubuntu & Debian-based distros with the following Terminal command:
 ```
