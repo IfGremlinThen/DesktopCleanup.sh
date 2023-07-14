@@ -1,4 +1,4 @@
-Tested on Linux Mint 21.1.
+<sub>Tested on Linux Mint 21.1.</sub>
 
 # DesktopCleanup.sh
 
