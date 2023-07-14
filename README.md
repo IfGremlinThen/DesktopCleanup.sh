@@ -1,5 +1,5 @@
 # DesktopCleanup.sh
-$${\color{green}Tested on Linux Mint 21.1.}$$
+> __Tested on Linux Mint 21.1.__
 
 A self-automating bash script for organizing files on your Ubuntu-based GNU-Linux desktop into appropriate folders.
 
