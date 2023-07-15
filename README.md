@@ -8,6 +8,11 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 
 - [x] Tested on **Linux Mint 21.1**.
 
+## Requirements
+This script requires the following extra packages to be installed:
+- `ffmpeg` (file conversion)
+- `perl` (file renaming)
+
 ## Features
 - **Automates** itself as a `crontab` job to run every 15 minutes
 - **Renames** files with foreign MacOS characters
@@ -41,11 +46,6 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.7z`, `.tar.gz`, `.zip` archives to _~/Documents/Unsorted Archives_
   - `.torrent` torrents to _~/Downloads/Torrents_
   - `.graffle`, `.icns`, `.m4p`, `.mid`, `.numbers`, `.svg` to _~/Desktop/Unconvertable_
-
-## Requirements
-This script requires the following extra packages to be installed:
-- `ffmpeg` (file conversion)
-- `perl` (file renaming)
 
 They can be installed on Debian-based distros with the following Terminal command:
 ```
