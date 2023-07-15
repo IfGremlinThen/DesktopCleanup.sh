@@ -8,22 +8,6 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 
 - [x] Tested on **Linux Mint 21.1**.
 
-## Requirements
-This script requires the following dependencies:
-- `ffmpeg` (file conversion)
-- `perl` (file renaming)
-
-They can be installed on Debian-based distros with the following Terminal command:
-```
-sudo apt install ffmpeg perl
-```
-
-## Installation
-Installation is very simple, just drag-and-drop this script into your ~/Documents folder and run the following Terminal command:
-```
-bash ~/Documents/desktopcleanup.sh
-```
-
 ## Features
 - **Automates** itself as a `crontab` job to run every 15 minutes
 - **Renames** files with foreign MacOS characters
@@ -58,7 +42,23 @@ bash ~/Documents/desktopcleanup.sh
   - `.torrent` torrents to _~/Downloads/Torrents_
   - `.graffle`, `.icns`, `.m4p`, `.mid`, `.numbers`, `.svg` to _~/Desktop/Unconvertable_
 
-## Uninstallation
+## Requirements
+This script requires the following dependencies:
+- `ffmpeg` (file conversion)
+- `perl` (file renaming)
+
+They can be installed on Debian-based distros with the following Terminal command:
+```
+sudo apt install ffmpeg perl
+```
+
+## Installation
+Installation is very simple, just drag-and-drop this script into your ~/Documents folder and run the following Terminal command:
+```
+bash ~/Documents/desktopcleanup.sh
+```
+
+### Uninstallation
 You can easily remove DesktopCleanup.sh from your system by trashing the .sh file in your ~/Documents folder and running the following Terminal command:
 ```
 crontab -r
