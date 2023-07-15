@@ -18,6 +18,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.divx`, `.flv`, `.mov`, `.mpg`, `.webm` video to `.mp4`
 - **Moves**
   - `.ctb`, `.doc`, `.html`, `.pdf`, `.rtf`, `.txt`, `.xlsx` documents to _~/Documents/Unsorted_
+  - `.7z`, `.tar.gz`, `.zip` archives to _~/Documents/Unsorted Archives_
   - `.gif`, `.jpg`, `.jpeg`, `.png` pictures to _~/Pictures/Unsorted_
   - "screenshots" to _~/Pictures/Unsorted/Screenshots_
   - `.psd` files to _~/Pictures/Photoshop_
@@ -38,7 +39,6 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.appimage` & `.x86_64` apps to _~/Applications_, makes them executable, and links them to the Desktop
   - `.exe` Windows apps to _~/Applications/Windows_
   - `.app` MacOS apps to _~/Applications/MacOS_
-  - `.7z`, `.tar.gz`, `.zip` archives to _~/Documents/Unsorted Archives_
   - `.torrent` torrents to _~/Downloads/Torrents_
   - `.graffle`, `.icns`, `.m4p`, `.mid`, `.numbers`, `.svg` to _~/Desktop/Unconvertable_
 
