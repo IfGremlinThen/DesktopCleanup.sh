@@ -47,7 +47,7 @@ This script requires the following dependencies:
 - `ffmpeg` (file conversion)
 - `perl` (file renaming)
 
-Install via `apt` (for **Debian/Ubuntu**)
+**Install on Debian/Ubuntu** via `apt`:
 ```
 sudo apt install ffmpeg perl
 ```
