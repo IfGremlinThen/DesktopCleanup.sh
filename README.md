@@ -17,6 +17,11 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.m4a` & `.mpga` audio to `.wav`
   - `.divx`, `.flv`, `.mov`, `.mpg`, `.webm` video to `.mp4`
 - **Moves**
+  - `.deb` `.flatpakref`, `.rpm` packages to _~/Applications/Linux Packages_
+  - `.appimage` & `.x86_64` apps to _~/Applications_, makes them executable, and links them to the Desktop
+  - `.exe` Windows apps to _~/Applications/Windows_
+  - `.app` MacOS apps to _~/Applications/MacOS_
+  - `.apk` Android apps to _~/Applications/Android_
   - `.ctb`, `.doc`, `.html`, `.rtf`, `.txt`, `.xlsx` documents to _~/Documents/Unsorted_
   - `.epub` & `.pdf` books to _~/Documents/Books_
   - `.gif`, `.jpg`, `.jpeg`, `.png`, `.raw`, `.svg`, `.tiff` pictures to _~/Pictures/Unsorted_
@@ -37,11 +42,6 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.swf` Flash games to _~/Games/Flash_
   - `.gblorb`, `.z3`, `.z5`, `.z8` text adventures to _~/Games/Text Adventures_
   - `.scm` & `.scx` Starcraft maps to _~/.wine/drive_c/Program Files (x86)/StarCraft/Maps_
-  - `.deb` `.flatpakref`, `.rpm` packages to _~/Applications/Linux Packages_
-  - `.appimage` & `.x86_64` apps to _~/Applications_, makes them executable, and links them to the Desktop
-  - `.exe` Windows apps to _~/Applications/Windows_
-  - `.app` MacOS apps to _~/Applications/MacOS_
-  - `.apk` Android apps to _~/Applications/Android_
   - `.torrent` torrents to _~/Downloads/Torrents_
   - `.graffle`, `.icns`, `.numbers`, to _~/Desktop/Unconvertable_
   - `.m4p` songs to _~/Desktop/Dangerous Files_
