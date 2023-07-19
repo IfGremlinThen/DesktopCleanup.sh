@@ -45,7 +45,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.torrent` torrents to _~/Downloads/Torrents_
   - `.graffle`, `.icns`, `.numbers`, to _~/Desktop/Unconvertable_
   - `.m4p` songs to _~/Desktop/Dangerous Files_
-- **Optional Moves:** (can be enabled by removing the # from their function)
+- **Optional Moves:** *(can be enabled by removing the # from their function)*
   - `.applescript`, `.css`, `.html`, `.php`, `.py`, `.sh` scripts to _~/Documents/Scripts_ 
   - `.7z`, `.rar`, `.tar.gz`, `.zip` archives to _~/Documents/Unsorted Archives_
 
