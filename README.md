@@ -17,7 +17,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.m4a` & `.mpga` audio to `.wav`
   - `.divx`, `.flv`, `.mov`, `.mpg`, `.webm` video to `.mp4`
 - **Moves**
-  - `.deb` `.flatpakref`, `.rpm` packages to _~/Applications/Linux Packages_
+  - `.deb`, `.flatpakref`, `.rpm` packages to _~/Applications/Linux Packages_
   - `.appimage` & `.x86_64` apps to _~/Applications_, makes them executable, and links them to the Desktop
   - `.exe` Windows apps to _~/Applications/Windows_
   - `.app` MacOS apps to _~/Applications/MacOS_
