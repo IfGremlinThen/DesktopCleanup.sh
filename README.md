@@ -2,11 +2,12 @@
 
 A self-automating bash script for organizing files on your Ubuntu-based GNU-Linux desktop into appropriate folders.
 
+<p align=center><img src="https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white"></p>
 The purpose of this script is to perform general cleanup of your Desktop in a way that can be automated.  As of **Version 1.2**, DesktopCleanup.sh schedules itself to run every 15 minutes as a `crontab` job.
 
 DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 'Unsorted' folders in each of your main Home folders (audio files will be moved to ~/Music/Unsorted, video will be moved to ~/Videos/Unsorted, etc).  It also uses `perl` to bulk rename files with foreign characters found in MacOS filenames and `ffmpeg` to convert less popular lossy file formats into more universal and less lossy (or lossless) file formats.  Below is a complete list of features:
 
-[x] - <p align=center>Tested on **Linux Mint 21.2.**</p>
+<p align=center>Tested on **Linux Mint 21.2.**</p>
 
 ## Features
 - **Automates** itself as a `crontab` job to run every 15 minutes
