@@ -69,6 +69,5 @@ bash ~/Documents/desktopcleanup.sh
 ### Uninstallation
 You can easily remove DesktopCleanup.sh from your system by trashing the .sh file in your ~/Documents folder and running the following Terminal command:
 ```
-crontab -r
+crontab -l | grep -v "desktopcleanup.sh" | crontab -
 ```
-***Warning!:*** *This will reset `crontab` to it's default settings and overwrite any other jobs assigned to it.  You can check all of `crontab`'s jobs by running `crontab -l`.*
