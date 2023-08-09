@@ -56,7 +56,7 @@ This script requires the following dependencies:
 - `ffmpeg` (file conversion)
 - `perl` (file renaming)
 
-**Install on Debian/Ubuntu** via `apt`:
+**Install on** <img src="https://img.shields.io/badge/Linux_Mint-87CF3E?style=for-the-badge&logo=linux-mint&logoColor=white" height="20px"> via `apt`:
 ```
 sudo apt install ffmpeg perl
 ```
