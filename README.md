@@ -8,7 +8,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 
 _<p align=center>Tested on **Linux Mint 21.2.**</p>_
 
-<p align=center><img src="https://img.shields.io/badge/Linux_Mint-87CF3E?style=for-the-badge&logo=linux-mint&logoColor=white"><img src="https://img.shields.io/badge/Linux_Mint-87CF3E?style=for-the-badge&logo=linux-mint&logoColor=white" height="80%"></p>
+<p align=center><img src="https://img.shields.io/badge/Linux_Mint-87CF3E?style=for-the-badge&logo=linux-mint&logoColor=white"><img src="https://img.shields.io/badge/Linux_Mint-87CF3E?style=for-the-badge&logo=linux-mint&logoColor=white" height="40px"></p>
 
 ## Features
 - **Automates** itself as a `crontab` job to run every 15 minutes
