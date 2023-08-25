@@ -3,416 +3,191 @@
 #REQUIRES PERL & FFMPEG
 
 ################################################################################
-# SCHEDULES DESKTOPCLEANUP EVERY 15 MINUTES W/ CRONTAB #########################
-echo "Setting up Crontab..."
-if crontab -l | grep "desktopcleanup.sh"
-then
-  echo "Your Desktop Cleanup is scheduled!"
-else
-  echo "Scheduling desktopcleanup.sh every 15 minutes."
-  crontab -l | { cat; echo "*/15 * * * * bash ~/Documents/desktopcleanup.sh"; } | crontab -
-fi
-#crontab -r #FOR UNINSTALL
+# SCRIPT LOGGING ###############################################################
+LOG_FILE="$HOME/Documents/desktopcleanup.log"
+exec > >(tee -a "$LOG_FILE") 2>&1
 
 ################################################################################
-# SETUP NULLGLOB ###############################################################
-cd ~/Desktop
-echo "Setting nullglob..."
-shopt -s nullglob #IGNORE EMPTY WILDCARDS
+# TERMINAL COLORS ##############################################################
+RED="\e[31m"
+DEFAULT="\e[0m"
+
+################################################################################
+# SCHEDULES DESKTOPCLEANUP EVERY 15 MINUTES W/ CRONTAB #########################
+if crontab -l | grep "desktopcleanup.sh"; then
+  echo "Your Desktop Cleanup is scheduled!"
+else
+  echo -e "${RED}cron job not found.${DEFAULT} Scheduling desktopcleanup.sh every 15 minutes."
+  crontab -l | { cat; echo "*/15 * * * * bash ~/Documents/desktopcleanup.sh"; } | crontab -
+fi
+#crontab -l | grep -v "desktopcleanup.sh" | crontab - #RUN TO UNINSTALL
+
+################################################################################
+# CD ###########################################################################
+cd ~/Desktop || exit
 
 ################################################################################
 # RENAMES FILES WITH FOREIGN MACOS CHARACTERS ##################################
-echo "Renaming foreign characters..."
-rename -f 's// - /g' ./* #0xF002, HYPHEN
-rename -f 's//"/g' ./* #0xF020, QUOTATION MARKS
-rename -f 's///g' ./* #0xF021
-rename -f 's//?/g' ./* #0xF025, #QUESTION MARK
-rename -f 's//|/g' ./* #0xF027, VERTICAL BAR
-rename -f 's///g' ./* #0xF00D
-rename 's/\.([^.]+)$/.\L$1/' *
+declare -A foreignCharacters=(
+  [""]=" - " #0xF002, HYPHEN
+  [""]="\"" #0xF020, QUOTATION MARKS
+  [""]="" #0xF021
+  [""]="?" #0xF025, #QUESTION MARK
+  [""]="|" #0xF027, VERTICAL BAR
+  [""]="" #0xF00D
+)
 
-################################################################################
-# FONTS ########################################################################
-installFonts(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Installing fonts..."
-  if [ ! -d ~/.local/share/fonts ]; then mkdir ~/.local/share/fonts; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/.local/share/fonts #MOVES FILETYPES GIVEN TO THE FUNCTION
+if [ -x "/usr/bin/rename" ]; then
+  for char in "${!foreignCharacters[@]}"; do
+    rename -f "s/$char/${foreignCharacters[$char]}/g" ./*
   done
-  fc-cache #UPDATES FONT CACHE
-}
-installFonts ./*.otf ./*.ttf
-
-################################################################################
-# TEXT #########################################################################
-backupDocuments(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up documents..."
-  if [ ! -d ~/Documents/Unsorted ]; then mkdir ~/Documents/Unsorted; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Documents/Unsorted #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupDocuments ./*.ctb ./*.doc ./*.rtf ./*.txt ./*.xlsx
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupBooks(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up books..."
-  if [ ! -d ~/Documents/Books ]; then mkdir ~/Documents/Books; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Documents/Books #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupBooks ./*.epub ./*.pdf
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupScripts(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up scripts..."
-  if [ ! -d ~/Documents/Scripts ]; then mkdir ~/Documents/Scripts; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Documents/Scripts #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-#DISABLED BY DEFAULT, DELETE THE FOLLOWING '#' TO RE-ENABLE:
-#backupScripts ./*.applescript ./*.css ./*.html ./*.php ./*.py ./*.sh
-
-################################################################################
-# IMAGES #######################################################################
-convertToPNG(){
-  (($#)) || return
-  echo "Converting to .png..."
-  for file in "$@"; do
-    ffmpeg -i "$file" "$file.png" && rm "$file"
-  done
-}
-convertToPNG ./*.avif ./*.bmp ./*.webp
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupScreenshots(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up screenshots..."
-  if [ ! -d ~/Pictures/Unsorted/Screenshots ]; then mkdir -p ~/Pictures/Unsorted/Screenshots; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Pictures/Unsorted/Screenshots #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupScreenshots ./*screen*.png ./Screen*.png
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupPictures(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up pictures..."
-  if [ ! -d ~/Pictures/Unsorted ]; then mkdir ~/Pictures/Unsorted; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Pictures/Unsorted #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupPictures ./*.gif ./*.jpg ./*.jpeg ./*.png ./*.raw ./*.svg ./*.tiff
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupPhotoshop(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up Photoshop files..."
-  if [ ! -d ~/Pictures/Photoshop ]; then mkdir ~/Pictures/Photoshop; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Pictures/Photoshop #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupPhotoshop ./*.psd
-
-################################################################################
-# AUDIO ########################################################################
-convertToWAV(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Converting to .wav..."
-  for file in "$@"; do
-    ffmpeg -i "$file" "$file.wav" && rm "$file"
-  done
-}
-convertToWAV ./*.m4a ./*.mpga
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupMusic(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up audio..."
-  if [ ! -d ~/Music/Unsorted ]; then mkdir ~/Music/Unsorted; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Music/Unsorted #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupMusic ./*.aiff ./*.flac ./*.mp3 ./*.m4b ./*.ogg ./*.wav
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupSoundfonts(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up soundfonts..."
-  if [ ! -d ~/Music/Soundfonts ]; then mkdir ~/Music/Soundfonts; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Music/Soundfonts #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupSoundfonts ./*.sf2
-
-################################################################################
-# VIDEO ########################################################################
-convertToMP4(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Converting to .mp4..."
-  for file in "$@"; do
-    ffmpeg -i "$file" "$file.mp4" && rm "$file"
-  done
-}
-convertToMP4 ./*.divx ./*.flv ./*.mov ./*.mpg ./*.webm
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupVideos(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up videos..."
-  if [ ! -d ~/Videos/Unsorted ]; then mkdir ~/Videos/Unsorted; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Videos/Unsorted #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupVideos ./*.3gp ./*.avi ./*.m4v ./*.mkv ./*.mp4
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupSubtitles(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up subtitles..."
-  if [ ! -d ~/Videos/Subtitles ]; then mkdir -p ~/Videos/Subtitles; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Videos/Subtitles #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupSubtitles ./*.srt
-
-################################################################################
-# GAMES ########################################################################
-backupSaveFiles(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up save files..."
-  if [ ! -d ~/Games/Save\ Files ]; then mkdir -p ~/Games/Save\ Files; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/Save\ Files #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupSaveFiles ./*.sav ./*.srm ./*.oops
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupPatches(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up save files..."
-  if [ ! -d ~/Games/ROMs/Patches ]; then mkdir -p ~/Games/ROMs/Patches; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/ROMs/Patches #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupPatches ./*.ips
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupNESROMs(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up NES roms..."
-  if [ ! -d ~/Games/ROMs/Nintendo/NES ]; then mkdir -p ~/Games/ROMs/Nintendo/NES; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/ROMs/Nintendo/NES #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupNESROMs ./*.nes
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupSNESROMs(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up SNES roms..."
-  if [ ! -d ~/Games/ROMs/Nintendo/SNES ]; then mkdir -p ~/Games/ROMs/Nintendo/SNES; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/ROMs/Nintendo/SNES #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupSNESROMs ./*.smc ./*.sfc
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupN64ROMs(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up N64 roms..."
-  if [ ! -d ~/Games/ROMs/Nintendo/N64 ]; then mkdir -p ~/Games/ROMs/Nintendo/N64; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/ROMs/Nintendo/N64 #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupN64ROMs ./*.n64 ./*.z64
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupGBAROMs(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up GBA roms..."
-  if [ ! -d ~/Games/ROMs/Nintendo/GBA ]; then mkdir -p ~/Games/ROMs/Nintendo/GBA; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/ROMs/Nintendo/GBA #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupGBAROMs ./*.gba
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupDSROMs(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up DS roms..."
-  if [ ! -d ~/Games/ROMs/Nintendo/DS ]; then mkdir -p ~/Games/ROMs/Nintendo/DS; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/ROMs/Nintendo/DS #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupDSROMs ./*.nds
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backup3DSROMs(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up 3DS roms..."
-  if [ ! -d ~/Games/ROMs/Nintendo/3DS ]; then mkdir -p ~/Games/ROMs/Nintendo/3DS; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/ROMs/Nintendo/3DS #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backup3DSROMs ./*.3ds
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupFlashGames(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up Flash games..."
-  if [ ! -d ~/Games/Flash ]; then mkdir -p ~/Games/Flash; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/Flash #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupFlashGames ./*.swf
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupTextAdventures(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up text adventures..."
-  if [ ! -d ~/Games/Text\ Adventures ]; then mkdir -p ~/Games/Text\ Adventures; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Games/Text\ Adventures #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupTextAdventures ./*.gblorb ./*.z3 ./*.z5 ./*.z8
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupStarcraftMaps(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up Starcraft maps..."
-  for file in "$@"; do
-    mv --backup=t "$@" ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads' #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-if [ -d ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads' ]; then #SKIP IF STARCRAFT MAPS FOLDER DOESN'T EXIST
-  backupStarcraftMaps ./*.scm ./*.scx
+else echo -e "${RED}rename command not found.${DEFAULT} Skipping renaming..."
 fi
 
 ################################################################################
+# GLOB SETUP ###################################################################
+shopt -s nocaseglob #ENABLE CASE-INSENSITIVITY
+
+################################################################################
+# COMMON FUNCTIONS #############################################################
+commonBackup() {
+  local source="$1"
+  local destination="$2"
+  local filetypes=("${@:4}")
+  local count=0
+
+  for ext in "${filetypes[@]}"; do
+    for file in "$source"/*"$ext"; do
+      if [ -f "$file" ]; then
+        ((count++))
+        if [ "$count" -eq 1 ]; then echo "Backing up ${3}..."; fi
+        if [ ! -d "$destination" ]; then mkdir -p "$destination"; fi
+        mv --backup=t "$file" "$destination"
+        if [[ "${file##*.}" == "appimage" || \
+              "${file##*.}" == "x86_64" || \
+              "${file##*.}" == "exe" ]]; then
+          chmod +x "$destination/$(basename "$file")" #MAKES EXECUTABLE
+          ln -s "$destination/$(basename "$file")" ~/"Desktop/$file Link" #LINKS TO DESKTOP
+        fi
+      fi
+    done
+  done
+}
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+commonConvert() {
+  local source="$1"
+  local filetypes=("${@:3}")
+  local count=0
+
+  for ext in "${filetypes[@]}"; do
+    for file in "$source"/*"$ext"; do
+      if [ -f "$file" ]; then
+        ((count++))
+        if [ "$count" -eq 1 ]; then echo "Converting to .${2}..."; fi
+        if [ -x "/usr/bin/ffmpeg" ]; then
+          ffmpeg -loglevel error -i "$file" "${file%.*}.${2}" && rm "$file"
+        else echo -e "${RED}ffmpeg command not found.${DEFAULT} Skipping conversion..."
+        fi
+      fi
+    done
+  done
+}
+
+################################################################################
+# FONTS ########################################################################
+commonBackup "." ~/.local/share/fonts "fonts" ".otf" ".ttf"
+fc-cache #UPDATES FONT CACHE
+
+################################################################################
 # APPLICATIONS #################################################################
-backupApplications(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up Linux applications..."
-  if [ ! -d ~/Applications ]; then mkdir ~/Applications; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Applications #MOVES FILETYPES GIVEN TO THE FUNCTION
-    ln -s ~/"Applications/$file" ~/"Desktop/$file Link" #CREATES A SYMBOLIC LINK ON THE DESKTOP
-    chmod +x ~/"Applications/$file"
-  done
-}
-backupApplications ./*.appimage ./*.x86_64
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupPackages(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up Linux packages..."
-  if [ ! -d ~/Applications/Linux\ Packages ]; then mkdir -p ~/Applications/Linux\ Packages; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Applications/Linux\ Packages #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupPackages ./*.deb ./*.rpm ./*.flatpakref
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupWinApplications(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up Windows applications..."
-  if [ ! -d ~/Applications/Windows ]; then mkdir -p ~/Applications/Windows; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Applications/Windows #MOVES FILETYPES GIVEN TO THE FUNCTION
-    ln -s ~/"Applications/Windows/$file" ~/"Desktop/$file Link" #CREATES A SYMBOLIC LINK ON THE DESKTOP
-  done
-}
-backupWinApplications ./*.exe
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupMacApplications(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up MacOS applications..."
-  if [ ! -d ~/Applications/MacOS ]; then mkdir -p ~/Applications/MacOS; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Applications/MacOS #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupMacApplications ./*.app
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupAndroidApps(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up Android applications..."
-  if [ ! -d ~/Applications/Android ]; then mkdir -p ~/Applications/Android; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Applications/Android #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupAndroidApps ./*.apk
+commonBackup "." ~/Applications/Linux\ Packages "Linux packages" ".deb" ".rpm" ".flatpak" ".flatpakref"
+commonBackup "." ~/Applications "Linux applications" ".appimage" ".x86_64"
+commonBackup "." ~/Applications/Windows "Windows applications" ".exe"
+commonBackup "." ~/Applications/MacOS "MacOS applications" ".app"
+commonBackup "." ~/Applications/Android "Android applications"
+commonBackup "." ~/Applications/Mozilla\ Extensions "Mozilla extensions" ".xpi"
 
 ################################################################################
-# ARCHIVES #####################################################################
-backupArchives(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up archives..."
-  if [ ! -d ~/Documents/Unsorted\ Archives ]; then mkdir ~/Documents/Unsorted\ Archives; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Documents/Unsorted\ Archives #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-#backupArchives ./*.7z ./*.rar ./*.tar.gz ./*.zip
+# DOCUMENTS ####################################################################
+commonBackup "." ~/Documents/Books "books" ".epub" ".pdf"
+commonBackup "." ~/Documents/Unsorted "documents" ".ctb" ".doc" ".rtf" ".txt" ".xlsx"
+commonBackup "." ~/Documents/Webpages "webpages" ".html" ".url"
+#DISABLED BY DEFAULT, DELETE THE FOLLOWING '#' TO RE-ENABLE:
+#commonBackup "." ~/Documents/Scripts "scripts" ".applescript" ".css" ".php" ".py" ".sh"
+#commonBackup "." ~/Documents/Unsorted\ Archives "archives" ".7z" ".rar" ".tar.gz" ".zip"
 
 ################################################################################
-# TORRENTS #####################################################################
-backupTorrents(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up torrent files..."
-  if [ ! -d ~/Downloads/Torrents ]; then mkdir ~/Downloads/Torrents; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Downloads/Torrents #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupTorrents ./*.torrent
+# PICTURES #####################################################################
+commonConvert "." "png" ".avif" ".bmp" ".webp"
+commonBackup "." ~/Pictures/Photoshop "Photoshop files" ".psd"
+commonBackup "." ~/Pictures/Unsorted "pictures" ".gif" ".jpg" ".jpeg" ".png" ".raw" ".svg" ".tiff"
+commonBackup "." ~/Pictures/Unsorted/Screenshots "screenshots" "screen.png" "Screen*.png"
+
+################################################################################
+# AUDIO ########################################################################
+commonConvert "." "mp3" ".m4a" ".mpga"
+commonBackup "." ~/Music/Sheet\ Music "sheet music files" ".mid" ".midi"
+commonBackup "." ~/Music/Soundfonts "soundfonts" ".sf2"
+commonBackup "." ~/Music/Unsorted "audio" ".aiff" ".flac" ".mp3" ".m4b" ".ogg" ".wav"
+
+################################################################################
+# VIDEO ########################################################################
+commonConvert "." "mp4" ".divx" ".flv" ".mov" ".mpg" ".webm"
+commonBackup "." ~/Videos/Subtitles "subtitles" ".srt"
+commonBackup "." ~/Videos/Unsorted "videos" ".3gp" ".avi" ".m4v" ".mkv" ".mp4"
+
+################################################################################
+# GAMES ########################################################################
+commonBackup "." ~/Games/Flash "Flash games" ".swf"
+commonBackup "." ~/Games/ROMs/Nintendo/NES "NES roms" ".nes"
+commonBackup "." ~/Games/ROMs/Nintendo/SNES "SNES roms" ".smc" ".sfc"
+commonBackup "." ~/Games/ROMs/Nintendo/N64 "N64 roms" ".n64" ".z64"
+commonBackup "." ~/Games/ROMs/Nintendo/GBA "GBA roms" ".gba"
+commonBackup "." ~/Games/ROMs/Nintendo/DS "DS roms" ".nds"
+commonBackup "." ~/Games/ROMs/Nintendo/3DS "3DS roms" ".3ds"
+commonBackup "." ~/Games/ROMs/Hacks "romhacks" ".ips" ".rnqs"
+commonBackup "." ~/Games/Save\ Files "save files" ".sav" ".srm" ".oops"
+commonBackup "." ~/Games/Text\ Adventures "text adventures" ".gblorb" ".z3" ".z5" ".z8"
+
+if [ -d ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads' ]; then
+  commonBackup "." ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads' "Starcraft maps" ".scm" ".scx"
+fi
+
+################################################################################
+# DOWNLOADS ####################################################################
+commonBackup "." ~/Downloads/Torrents "torrent files" ".torrent"
 
 ################################################################################
 # MISCELLANEOUS ################################################################
-backupUnconvertables(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up unconvertable files..."
-  if [ ! -d ~/Desktop/Unconvertable ]; then mkdir ~/Desktop/Unconvertable; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Desktop/Unconvertable #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupUnconvertables ./*.graffle ./*.icns ./*.numbers
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-backupDangerousFiles(){
-  (($#)) || return #CHECKS FOR REMAINING FILETYPES GIVEN TO THE FUNCTION, IF NONE, ABORTS
-  echo "Backing up unconvertable files..."
-  if [ ! -d ~/Desktop/Dangerous\ Files ]; then mkdir ~/Desktop/Dangerous\ Files; fi
-  for file in "$@"; do
-    mv --backup=t "$@" ~/Desktop/Dangerous\ Files #MOVES FILETYPES GIVEN TO THE FUNCTION
-  done
-}
-backupDangerousFiles ./*.m4p
-#.m4p is a .aac file with Apple's propriety iTunes DRM which causes a "mp4 demux error" loop in VLC
+commonBackup "." ~/Desktop/Dangerous\ Files "dangerous files" ".m4p"
+commonBackup "." ~/Downloads/Unconvertable "unconvertable files" ".graffle" ".icns" ".numbers"
+
+################################################################################
+# GLOB SETDOWN #################################################################
+shopt -u nocaseglob #DISABLE CASE-INSENSITIVTY
 
 ################################################################################
 echo "COMPLETE!"
-cd
+cd || exit
 #touch ~/Desktop/cleanupreceipt.txt
 
 #TO-DO
 #ADDITIONS
-#Added support for .apk, .rar (#'d out archives'), .raw, tiff, .epub, .applescript, .sh, .py, .html, .css, .php (disabled by default), .srt, .sf2, .flatpakref, .ips,
-#Added rename support for 0xF00D
+#Added support for .mid, .midi (Sheet Music)
+#Added support for .xpi (Mozilla extensions)
+#Added support for .flatpak
+#Added support for .rnqs files (Pokemon, ROMs/Hacks)
+#Added support for .url under Webpages
+#Now creates a .log file for bash output
+#Color-coded error messages
 #CHANGES
-#.pdf moved to ~/Documents/Books
-#moved /Games/Roms/Save Files dir to /Games/Save Files
-#moved .svg to Pictures/Unsorted
-#moved .m4p to ~/Desktop/Dangerous Files, causes a VLC error loop
-#chmod merely adds executable to application permissions
+#Moved .html to ~/Documents/Webpages
+#Renamed ROMs/Patches to ROMs/Hacks
 #REMOVED
-#support for .mid
 #FIXES
-#Correctly recognizes .oops, .sfc, .scx files.
-#Creates parent directorties if they don't exist.
+#ffmpeg fully replaces the extension
+#Passes `shellcheck`
+#Rewrote entire script to consolidate functions and remove glob errors
+#Only runs `perl` & `ffmpeg` commands if they are installed
+#Removed `rename` command to rename uppercase characters to lowercase
