@@ -28,8 +28,8 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.ctb`, `.doc`, `.rtf`, `.txt`, `.xlsx` documents to _~/Documents/Unsorted_
   - `.html`, `.url` webpages to _~/Documents/Webpages_
   - `.psd` files to _~/Pictures/Photoshop_
-  - `.gif`, `.jpg`, `.jpeg`, `.png`, `.raw`, `.svg`, `.tiff` pictures to _~/Pictures/Unsorted_
   - "screenshots" to _~/Pictures/Unsorted/Screenshots_
+  - `.gif`, `.jpg`, `.jpeg`, `.png`, `.raw`, `.svg`, `.tiff` pictures to _~/Pictures/Unsorted_
   - `.aiff`, `.flac`, `.mp3`, `.m4b`, `.ogg`, `.wav` audio to _~/Music/Unsorted_
   - `.mid`, `.midi` sheet music to _~/Music/Sheet Music_
   - `.sf2` soundfonts to _~/Music/Soundfonts_
