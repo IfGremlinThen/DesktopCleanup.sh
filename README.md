@@ -11,49 +11,47 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 
 ## Features
 - **Automates** itself as a `crontab` job to run every 15 minutes
-- **Renames** files with common foreign MacOS characters
+- **Renames** files with common foreign MacOS characters (requires `perl`)
 - **Installs** `.otf` & `.ttf` fonts to _~/.local/share/fonts_
-- **Converts**
+- **Converts** (requires `ffmpeg`)
   - `.avif`, `.bmp`, `.webp` pictures to `.png`
   - `.m4a` & `.mpga` audio to `.wav`
   - `.divx`, `.flv`, `.mov`, `.mpg`, `.webm` video to `.mp4`
 - **Moves**
-  - `.deb`, `.flatpakref`, `.rpm` packages to _~/Applications/Linux Packages_
+  - `.deb`, `.flatpak`, `.flatpakref`, `.rpm` packages to _~/Applications/Linux Packages_
   - `.appimage` & `.x86_64` apps to _~/Applications_, makes them executable, and links them to the Desktop
   - `.exe` Windows apps to _~/Applications/Windows_
   - `.app` MacOS apps to _~/Applications/MacOS_
   - `.apk` Android apps to _~/Applications/Android_
-  - `.ctb`, `.doc`, `.html`, `.rtf`, `.txt`, `.xlsx` documents to _~/Documents/Unsorted_
+  - `.xpi` Mozilla Extensions to _~/Applications/Mozilla Extensions_
   - `.epub` & `.pdf` books to _~/Documents/Books_
+  - `.ctb`, `.doc`, `.rtf`, `.txt`, `.xlsx` documents to _~/Documents/Unsorted_
+  - `.html`, `.url` webpages to _~/Documents/Webpages_
+  - `.psd` files to _~/Pictures/Photoshop_
   - `.gif`, `.jpg`, `.jpeg`, `.png`, `.raw`, `.svg`, `.tiff` pictures to _~/Pictures/Unsorted_
   - "screenshots" to _~/Pictures/Unsorted/Screenshots_
-  - `.psd` files to _~/Pictures/Photoshop_
   - `.aiff`, `.flac`, `.mp3`, `.m4b`, `.ogg`, `.wav` audio to _~/Music/Unsorted_
+  - `.mid`, `.midi` sheet music to _~/Music/Sheet Music_
   - `.sf2` soundfonts to _~/Music/Soundfonts_
-  - `.3gp`, `.avi`, `.m4v`, `.mkv`, `.mp4` videos to _~/Videos/Unsorted_
   - `.srt` subtitles to _~/Videos/Subtitles_
-  - `.sav`, `.srm`, `.oops` save files to _~/Games/Save Files_
+  - `.3gp`, `.avi`, `.m4v`, `.mkv`, `.mp4` videos to _~/Videos/Unsorted_
+  - `.swf` Flash games to _~/Games/Flash_
   - `.nes` NES roms to _~/Games/ROMs/Nintendo/NES_
   - `.smc` & `.sfc` SNES roms to _~/Games/ROMs/Nintendo/SNES_
   - `.n64` & `.z64` N64 roms to _~/Games/ROMs/Nintendo/N64_
   - `.gba` GBA roms to _~/Games/ROMs/Nintendo/GBA_
   - `.nds` DS roms to _~/Games/ROMs/Nintendo/DS_
   - `.3ds` 3DS roms to _~/Games/ROMs/Nintendo/3DS_
-  - `.ips` patches to _~/Games/ROMs/Patches_
-  - `.swf` Flash games to _~/Games/Flash_
+  - `.ips`, `.rnqs` romhacks to _~/Games/ROMs/Hacks_
+  - `.sav`, `.srm`, `.oops` save files to _~/Games/Save Files_
   - `.gblorb`, `.z3`, `.z5`, `.z8` text adventures to _~/Games/Text Adventures_
   - `.scm` & `.scx` Starcraft maps to _~/.wine/drive_c/Program Files (x86)/StarCraft/Maps_
   - `.torrent` torrents to _~/Downloads/Torrents_
-  - `.graffle`, `.icns`, `.numbers`, to _~/Desktop/Unconvertable_
   - `.m4p` songs to _~/Desktop/Dangerous Files_
+  - `.graffle`, `.icns`, `.numbers`, to _~/Desktop/Unconvertable_
 - **Optional Moves:** *(can be enabled by removing the # from their function)*
   - `.applescript`, `.css`, `.html`, `.php`, `.py`, `.sh` scripts to _~/Documents/Scripts_ 
   - `.7z`, `.rar`, `.tar.gz`, `.zip` archives to _~/Documents/Unsorted Archives_
-
-## Requirements
-This script requires the following dependencies:
-- `ffmpeg` (file conversion)
-- `perl` (file renaming)
 
 **Install on Debian/Ubuntu** via `apt`:
 ```
