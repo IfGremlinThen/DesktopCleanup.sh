@@ -61,7 +61,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - `.applescript`, `.css`, `.html`, `.php`, `.py`, `.sh` scripts to _~/Documents/Scripts_ 
   - `.7z`, `.rar`, `.tar.gz`, `.zip` archives to _~/Documents/Unsorted Archives_
 
-**Install on Debian/Ubuntu** via `apt`:
+**Install optional dependencies on Debian/Ubuntu** via `apt`:
 ```
 sudo apt install ffmpeg perl
 ```
