@@ -1,6 +1,6 @@
 # DesktopCleanup.sh
 
-A self-automating bash script for organizing files on your Ubuntu-based GNU-Linux desktop into appropriate folders.
+A self-automating bash script for organizing files on your Ubuntu-based Linux desktop into appropriate folders.
 
 <p align=center><img src="https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white">  <img src="https://img.shields.io/badge/Atom-66595C?style=for-the-badge&logo=Atom&logoColor=white">  <img src="https://img.shields.io/badge/Linux_Mint-87CF3E?style=for-the-badge&logo=linux-mint&logoColor=white"></p>
 <p align=center>Written in <b><a href="http://git.savannah.gnu.org/cgit/bash.git">Bash 5.1</a></b>. Edited in <b><a href="https://github.com/atom/atom">Atom 1.59</a></b>. Tested on <b><a href="https://github.com/linuxmint">Linux Mint 21.2</a></b>.</p>
