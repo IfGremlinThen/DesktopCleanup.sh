@@ -1,6 +1,6 @@
 # DesktopCleanup.sh
 
-A self-automating bash script for organizing files on your Ubuntu-based GNU-Linux desktop into appropriate folders.
+A self-automating bash script for organizing files on your Ubuntu-based Linux desktop into appropriate folders.
 
 <p align=center><img src="https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white">  <img src="https://img.shields.io/badge/Atom-66595C?style=for-the-badge&logo=Atom&logoColor=white">  <img src="https://img.shields.io/badge/Linux_Mint-87CF3E?style=for-the-badge&logo=linux-mint&logoColor=white"></p>
 <p align=center>Written in <b><a href="http://git.savannah.gnu.org/cgit/bash.git">Bash 5.1</a></b>. Edited in <b><a href="https://github.com/atom/atom">Atom 1.59</a></b>. Tested on <b><a href="https://github.com/linuxmint">Linux Mint 21.2</a></b>.</p>
@@ -30,16 +30,18 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
     - `.ctb`, `.doc`, `.rtf`, `.txt`, `.xlsx` documents to _~/Documents/Unsorted_
     - `.html`, `.url` webpages to _~/Documents/Webpages_
   - Pictures
-    - `.psd` files to _~/Pictures/Photoshop_
+    - `.kra`, `.psd`, `.xcf` projects to _~/Pictures/Projects
     - "screenshots" to _~/Pictures/Unsorted/Screenshots_
     - `.gif`, `.jpg`, `.jpeg`, `.png`, `.raw`, `.svg`, `.tiff` pictures to _~/Pictures/Unsorted_
   - Music
     - `.aiff`, `.flac`, `.mp3`, `.m4b`, `.ogg`, `.wav` audio to _~/Music/Unsorted_
     - `.mid`, `.midi` sheet music to _~/Music/Sheet Music_
     - `.sf2` soundfonts to _~/Music/Soundfonts_
+    - <1MB sound effects to _~/Music/SFX_
   - Video
+    - `.flb`, `.kdenlive`, `.mlt`, `.osp`, `.ove`, `.xges` projects to _~/Videos/Projects_
     - `.srt` subtitles to _~/Videos/Subtitles_
-    - `.3gp`, `.avi`, `.m4v`, `.mkv`, `.mp4` videos to _~/Videos/Unsorted_
+    - `.3gp`, `.avi`, `.m4v`, `.mkv`, `.mp4`, `ogx` videos to _~/Videos/Unsorted_
   - Games
     - `.swf` Flash games to _~/Games/Flash_
     - `.nes` NES roms to _~/Games/ROMs/Nintendo/NES_
@@ -51,6 +53,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
     - `.ips`, `.rnqs` romhacks to _~/Games/ROMs/Hacks_
     - `.sav`, `.srm`, `.oops` save files to _~/Games/Save Files_
     - `.gblorb`, `.z3`, `.z5`, `.z8` text adventures to _~/Games/Text Adventures_
+    - `.ydk` decklists to _~/Games/TCGs_
     - `.scm` & `.scx` Starcraft maps to _~/.wine/drive_c/Program Files (x86)/StarCraft/Maps_
   - Downloads
     - `.torrent` torrents to _~/Downloads/Torrents_

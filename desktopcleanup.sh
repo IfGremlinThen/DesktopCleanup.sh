@@ -1,11 +1,13 @@
 #!/bin/bash
 
-#REQUIRES PERL & FFMPEG
+#REQUIRES PERL & FFMPEG FOR BONUS FEATURES
 
 ################################################################################
 # SCRIPT LOGGING ###############################################################
-LOG_FILE="$HOME/Documents/desktopcleanup.log"
-exec > >(tee -a "$LOG_FILE") 2>&1
+LOG="$HOME/Documents/desktopcleanup.log"
+TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+echo "### $TIMESTAMP" >> "$LOG"
+exec > >(tee -a "$LOG") 2>&1
 
 ################################################################################
 # TERMINAL COLORS ##############################################################
@@ -14,10 +16,8 @@ DEFAULT="\e[0m"
 
 ################################################################################
 # SCHEDULES DESKTOPCLEANUP EVERY 15 MINUTES W/ CRONTAB #########################
-if crontab -l | grep "desktopcleanup.sh"; then
-  echo "Your Desktop Cleanup is scheduled!"
-else
-  echo -e "${RED}cron job not found.${DEFAULT} Scheduling desktopcleanup.sh every 15 minutes."
+if ! crontab -l | grep -q "desktopcleanup.sh"; then
+  echo -e "${RED}crontab job not found.${DEFAULT} Scheduling desktopcleanup.sh every 15 minutes."
   crontab -l | { cat; echo "*/15 * * * * bash ~/Documents/desktopcleanup.sh"; } | crontab -
 fi
 #crontab -l | grep -v "desktopcleanup.sh" | crontab - #RUN TO UNINSTALL
@@ -46,7 +46,8 @@ fi
 
 ################################################################################
 # GLOB SETUP ###################################################################
-shopt -s nocaseglob #ENABLE CASE-INSENSITIVITY
+shopt -s nocaseglob #ENABLE CASE-INSENSITIVITY FOR GLOBBING
+shopt -s nocasematch #ENABLE CASE-INSENSITIVITY FOR GLOBBING
 
 ################################################################################
 # COMMON FUNCTIONS #############################################################
@@ -59,15 +60,26 @@ commonBackup() {
   for ext in "${filetypes[@]}"; do
     for file in "$source"/*"$ext"; do
       if [ -f "$file" ]; then
-        ((count++))
-        if [ "$count" -eq 1 ]; then echo "Backing up ${3}..."; fi
-        if [ ! -d "$destination" ]; then mkdir -p "$destination"; fi
-        mv --backup=t "$file" "$destination"
-        if [[ "${file##*.}" == "appimage" || \
-              "${file##*.}" == "x86_64" || \
-              "${file##*.}" == "exe" ]]; then
-          chmod +x "$destination/$(basename "$file")" #MAKES EXECUTABLE
-          ln -s "$destination/$(basename "$file")" ~/"Desktop/$file Link" #LINKS TO DESKTOP
+        if [ ! -f "$source/$(basename "$file").part" ]; then #CHECK FOR TEMP FILE
+          ((count++))
+          if [ "$count" -eq 1 ]; then echo "Moving ${3}..."; fi #ECHO MOVE
+          if [ ! -d "$destination" ]; then mkdir -p "$destination"; fi #CREATES DESTINATION
+          mv --backup=t "$file" "$destination"
+          #POSTCHECK FOR SPECIAL RULES# # # # # # # # # # # # # # # # # # # # #
+          if [[ "${3}" == "fonts" ]]; then
+            fc-cache -f #UPDATES FONT CACHE
+          elif [[ "${3}" == "Linux applications" || "${3}" == "Windows applications" ]]; then
+            chmod +x "$destination/$(basename "$file")" #MAKES EXECUTABLE
+            ln -s "$destination/$(basename "$file")" ~/"Desktop/$(basename "$file" | cut -d. -f1)" #LINKS
+          elif [[ "${3}" == "pictures" && "$(basename "$file")" =~ (screen.*shot|screen.*cap) ]]; then
+            if [ ! -d ~/Pictures/Unsorted/Screenshots ]; then mkdir -p ~/Pictures/Unsorted/Screenshots; fi
+            mv --backup=t "$destination/$(basename "$file")" ~/Pictures/Unsorted/Screenshots
+          #elif [[ "${3}" == "audio" && $(stat -c %s "$file") -lt 1048576 ]]; then #CHECKS FOR SfX
+          #  if [ ! -d ~/Music/SFX ]; then mkdir -p ~/Music/SFX; fi
+          #  mv --backup=t "$destination/$(basename "$file")" ~/Music/SFX
+          fi
+          # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+        else echo -e "${RED}Temporary file found.${DEFAULT} Skipping..."
         fi
       fi
     done
@@ -86,7 +98,10 @@ commonConvert() {
         ((count++))
         if [ "$count" -eq 1 ]; then echo "Converting to .${2}..."; fi
         if [ -x "/usr/bin/ffmpeg" ]; then
-          ffmpeg -loglevel error -i "$file" "${file%.*}.${2}" && rm "$file"
+          if [ ! -f "$source/$(basename "$file").part" ]; then #CHECK FOR TEMP FILE
+            ffmpeg -loglevel error -i "$file" "${file%.*}.${2}" && rm "$file"
+          else echo -e "${RED}Temporary file found.${DEFAULT} Skipping conversion..."
+          fi
         else echo -e "${RED}ffmpeg command not found.${DEFAULT} Skipping conversion..."
         fi
       fi
@@ -120,9 +135,8 @@ commonBackup "." ~/Documents/Webpages "webpages" ".html" ".url"
 ################################################################################
 # PICTURES #####################################################################
 commonConvert "." "png" ".avif" ".bmp" ".webp"
-commonBackup "." ~/Pictures/Photoshop "Photoshop files" ".psd"
+commonBackup "." ~/Pictures/Projects "graphical projects" ".kra" ".psd" ".xcf"
 commonBackup "." ~/Pictures/Unsorted "pictures" ".gif" ".jpg" ".jpeg" ".png" ".raw" ".svg" ".tiff"
-commonBackup "." ~/Pictures/Unsorted/Screenshots "screenshots" "screen.png" "Screen*.png"
 
 ################################################################################
 # AUDIO ########################################################################
@@ -134,8 +148,9 @@ commonBackup "." ~/Music/Unsorted "audio" ".aiff" ".flac" ".mp3" ".m4b" ".ogg" "
 ################################################################################
 # VIDEO ########################################################################
 commonConvert "." "mp4" ".divx" ".flv" ".mov" ".mpg" ".webm"
+commonBackup "." ~/Videos/Projects "video projects" ".flb" ".kdenlive" ".mlt" ".osp" ".ove" ".xges"
 commonBackup "." ~/Videos/Subtitles "subtitles" ".srt"
-commonBackup "." ~/Videos/Unsorted "videos" ".3gp" ".avi" ".m4v" ".mkv" ".mp4"
+commonBackup "." ~/Videos/Unsorted "videos" ".3gp" ".avi" ".m4v" ".mkv" ".mp4" ".ogx"
 
 ################################################################################
 # GAMES ########################################################################
@@ -149,6 +164,7 @@ commonBackup "." ~/Games/ROMs/Nintendo/3DS "3DS roms" ".3ds"
 commonBackup "." ~/Games/ROMs/Hacks "romhacks" ".ips" ".rnqs"
 commonBackup "." ~/Games/Save\ Files "save files" ".sav" ".srm" ".oops"
 commonBackup "." ~/Games/Text\ Adventures "text adventures" ".gblorb" ".z3" ".z5" ".z8"
+commonBackup "." ~/Games/TCGs "decklists" ".ydk"
 
 if [ -d ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads' ]; then
   commonBackup "." ~/'.wine/drive_c/Program Files (x86)/StarCraft/Maps/downloads' "Starcraft maps" ".scm" ".scx"
@@ -165,29 +181,31 @@ commonBackup "." ~/Downloads/Unconvertable "unconvertable files" ".graffle" ".ic
 
 ################################################################################
 # GLOB SETDOWN #################################################################
-shopt -u nocaseglob #DISABLE CASE-INSENSITIVTY
+shopt -u nocaseglob #DISABLE CASE-INSENSITIVTY FOR GLOBBING
+shopt -u nocasematch #DISABLE CASE-INSENSITIVTY FOR MATCHING
 
 ################################################################################
 echo "COMPLETE!"
 cd || exit
-#touch ~/Desktop/cleanupreceipt.txt
 
 #TO-DO
+#Add support for .run files
+#Make fc-cache run only once
+#Fix sending large music files to ~/Music/SFX
 #ADDITIONS
-#Added support for .mid, .midi (Sheet Music)
-#Added support for .xpi (Mozilla extensions)
-#Added support for .flatpak
-#Added support for .rnqs files (Pokemon, ROMs/Hacks)
-#Added support for .url under Webpages
-#Now creates a .log file for bash output
-#Color-coded error messages
+#Added support for .kra (Krita), .xcf (Gimp)
+#Added support for .flb, .kdenlive, .mlt, .osp, .ove, .xges (Video Projects)
+#Added support for .ogx (Videos)
+#Added support for .ydk (TCGs)
+#Added timestamps to logging
+#Moves sub-1Mb audio files to ~/Music/SFX
 #CHANGES
-#Moved .html to ~/Documents/Webpages
-#Renamed ROMs/Patches to ROMs/Hacks
+#Changed ~/Pictures/Photoshop to ~/Pictures/Projects
+#Silenced grep output & removed crontab job affirmation
+#Drop extensions from links
 #REMOVED
 #FIXES
-#ffmpeg fully replaces the extension
-#Passes `shellcheck`
-#Rewrote entire script to consolidate functions and remove glob errors
-#Only runs `perl` & `ffmpeg` commands if they are installed
-#Removed `rename` command to rename uppercase characters to lowercase
+#Skips handling files with `.part`s in the same directory
+#Restored font cache updating
+#Fix Linking and Executability
+#Fix Screenshots
