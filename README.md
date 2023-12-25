@@ -37,7 +37,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
     - `.aiff`, `.flac`, `.mp3`, `.m4b`, `.ogg`, `.wav` audio to _~/Music/Unsorted_
     - `.mid`, `.midi` sheet music to _~/Music/Sheet Music_
     - `.sf2` soundfonts to _~/Music/Soundfonts_
-    - <1Mb sound effects to _~/Music/SFX_
+    - <1MB sound effects to _~/Music/SFX_
   - Video
     - `.flb`, `.kdenlive`, `.mlt`, `.osp`, `.ove`, `.xges` projects to _~/Videos/Projects_
     - `.srt` subtitles to _~/Videos/Subtitles_
