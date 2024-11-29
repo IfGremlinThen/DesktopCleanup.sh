@@ -12,6 +12,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 ## Features
 - **Automates** itself as a `crontab` job to run every 15 minutes
 - **Renames** files with common foreign MacOS characters (requires `perl`)
+- **Renames** files with a timestamp to prevent overwrites.
 - **Installs** `.otf` & `.ttf` fonts to _~/.local/share/fonts_
 - **Converts** (requires `ffmpeg`)
   - `.avif`, `.bmp`, `.webp` pictures to `.png`
@@ -21,25 +22,26 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
   - Applications
     - `.deb`, `.flatpak`, `.flatpakref`, `.rpm` packages to _~/Applications/Linux Packages_
     - `.appimage` & `.x86_64` apps to _~/Applications_, makes them executable, and links them to the Desktop
-    - `.exe` Windows apps to _~/Applications/Windows_
+    - `.exe` & `.msi` Windows apps to _~/Applications/Windows_
     - `.app` MacOS apps to _~/Applications/MacOS_
     - `.apk` Android apps to _~/Applications/Android_
     - `.xpi` Mozilla Extensions to _~/Applications/Mozilla Extensions_
   - Documents
     - `.epub` & `.pdf` books to _~/Documents/Books_
-    - `.ctb`, `.doc`, `.rtf`, `.txt`, `.xlsx` documents to _~/Documents/Unsorted_
+    - `.numbers`, `.xls`, `.xlsx` to _~/Documents/Spreadsheets_
+    - `.asc`, `.ctb`, `.doc`, `.docx`, `.eml`, `.rtf`, `.txt` documents to _~/Documents/Unsorted_
     - `.html`, `.url` webpages to _~/Documents/Webpages_
   - Pictures
     - `.kra`, `.psd`, `.xcf` projects to _~/Pictures/Projects
     - "screenshots" to _~/Pictures/Unsorted/Screenshots_
-    - `.gif`, `.jpg`, `.jpeg`, `.png`, `.raw`, `.svg`, `.tiff` pictures to _~/Pictures/Unsorted_
+    - `.heic`, `.gif`, `.jpg`, `.jpeg`, `.png`, `.raw`, `.svg`, `.tiff` pictures to _~/Pictures/Unsorted_
   - Music
-    - `.aiff`, `.flac`, `.mp3`, `.m4b`, `.ogg`, `.wav` audio to _~/Music/Unsorted_
+    - `.aiff`, `.flac`, `.mp3`, `.m4b`, `.oga`, `.ogg`, `.wav` audio to _~/Music/Unsorted_
     - `.mid`, `.midi` sheet music to _~/Music/Sheet Music_
     - `.sf2` soundfonts to _~/Music/Soundfonts_
     - <1MB sound effects to _~/Music/SFX_
   - Video
-    - `.flb`, `.kdenlive`, `.mlt`, `.osp`, `.ove`, `.xges` projects to _~/Videos/Projects_
+    - `.flb`, `.kdenlive`, `.mlt`, `.osp`, `.ove`, `.wmv`, `.xges` projects to _~/Videos/Projects_
     - `.srt` subtitles to _~/Videos/Subtitles_
     - `.3gp`, `.avi`, `.m4v`, `.mkv`, `.mp4`, `ogx` videos to _~/Videos/Unsorted_
   - Games
@@ -47,6 +49,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
     - `.nes` NES roms to _~/Games/ROMs/Nintendo/NES_
     - `.smc` & `.sfc` SNES roms to _~/Games/ROMs/Nintendo/SNES_
     - `.n64` & `.z64` N64 roms to _~/Games/ROMs/Nintendo/N64_
+    - `.gbc` GB roms to _~/Games/ROMs/Nintendo/GB_
     - `.gba` GBA roms to _~/Games/ROMs/Nintendo/GBA_
     - `.nds` DS roms to _~/Games/ROMs/Nintendo/DS_
     - `.3ds` 3DS roms to _~/Games/ROMs/Nintendo/3DS_
@@ -59,7 +62,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
     - `.torrent` torrents to _~/Downloads/Torrents_
   - Miscellaneous
     - `.m4p` songs to _~/Desktop/Dangerous Files_
-    - `.graffle`, `.icns`, `.numbers`, to _~/Desktop/Unconvertable_
+    - `.graffle`, `.icns`, `.rsrc` to _~/Desktop/Unconvertable_
 - **Optional Moves:** *(can be enabled by removing the # from their function)*
   - `.applescript`, `.css`, `.html`, `.php`, `.py`, `.sh` scripts to _~/Documents/Scripts_ 
   - `.7z`, `.rar`, `.tar.gz`, `.zip` archives to _~/Documents/Unsorted Archives_
