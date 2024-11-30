@@ -69,7 +69,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 
 **Install optional dependencies on Debian/Ubuntu** via `apt`:
 ```
-sudo apt install ffmpeg perl
+sudo apt install ffmpeg imagemagick perl
 ```
 
 ## Installation
