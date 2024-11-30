@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#REQUIRES PERL & FFMPEG FOR BONUS FEATURES
+#REQUIRES PERL, FFMPEG, & IMAGEMAGICK FOR BONUS FEATURES
 
 ################################################################################
 # SCRIPT LOGGING ###############################################################
@@ -45,6 +45,18 @@ else echo -e "${RED}rename command not found.${DEFAULT} Skipping renaming..."
 fi
 
 ################################################################################
+# RANDOM STRING FOR FILENAMES ##################################################
+#roll8d10s() {
+#    perl -e 'print int(rand(100000000))' | printf "%08d\n" "$(cat -)"
+#}
+#randomstring=$(roll8d10s) #CREATES RANDOM STRING OF 8 NUMBERS
+
+################################################################################
+# PRINT CURRENT DATE & TIME ####################################################
+date=$(date +"%y-%m-%d %-l:%M:%S%P" | sed 's/.$//') #2024-01-01 02:00:00p
+#date=$(date +"%y%m%d%H%M%S") #240101140000
+
+################################################################################
 # GLOB SETUP ###################################################################
 shopt -s nocaseglob #ENABLE CASE-INSENSITIVITY FOR GLOBBING
 shopt -s nocasematch #ENABLE CASE-INSENSITIVITY FOR GLOBBING
@@ -64,7 +76,10 @@ commonBackup() {
           ((count++))
           if [ "$count" -eq 1 ]; then echo "Moving ${3}..."; fi #ECHO MOVE
           if [ ! -d "$destination" ]; then mkdir -p "$destination"; fi #CREATES DESTINATION
-          mv --backup=t "$file" "$destination"
+          extension="${file##*.}" #SAVES EXTENSION
+          newfile="${file%.*} $date.$extension"
+          mv "$file" "$newfile" #APPENDS STRING TO FILENAME
+          mv --backup=t "$newfile" "$destination"
           #POSTCHECK FOR SPECIAL RULES# # # # # # # # # # # # # # # # # # # # #
           if [[ "${3}" == "fonts" ]]; then
             fc-cache -f #UPDATES FONT CACHE
@@ -95,15 +110,20 @@ commonConvert() {
   for ext in "${filetypes[@]}"; do
     for file in "$source"/*"$ext"; do
       if [ -f "$file" ]; then
+        if [ ! -f "$source/$(basename "$file").part" ]; then #CHECK FOR TEMP
         ((count++))
-        if [ "$count" -eq 1 ]; then echo "Converting to .${2}..."; fi
-        if [ -x "/usr/bin/ffmpeg" ]; then
-          if [ ! -f "$source/$(basename "$file").part" ]; then #CHECK FOR TEMP FILE
-            ffmpeg -loglevel error -i "$file" "${file%.*}.${2}" && rm "$file"
-          else echo -e "${RED}Temporary file found.${DEFAULT} Skipping conversion..."
-          fi
-        else echo -e "${RED}ffmpeg command not found.${DEFAULT} Skipping conversion..."
-        fi
+        if [ "$count" -eq 1 ]; then echo "Converting to ${2}..."; fi
+          if [ -x "/usr/bin/ffmpeg" ]; then
+            if [[ "$file" =~ \.(avif|heic|webp)$ ]]; then
+              if [ -x "/usr/bin/convert" ]; then
+                if ffprobe "$file" 2>&1 | grep -q "unsupported chunk: ANIM";
+                then convert "$file" "${file%.*}.gif"
+                else convert "$file" "${file%.*}.${2}"; fi
+                gio trash "$file"
+              else echo -e "${RED}convert command not found.${DEFAULT}"; fi
+            else ffmpeg -loglevel error -i "$file" "${file%.*}.${2}" && gio trash "$file"; fi
+          else echo -e "${RED}ffmpeg command not found.${DEFAULT}"; fi
+        else echo -e "${RED}Temporary file found. Skipping...${DEFAULT}"; fi
       fi
     done
   done
@@ -118,7 +138,7 @@ fc-cache #UPDATES FONT CACHE
 # APPLICATIONS #################################################################
 commonBackup "." ~/Applications/Linux\ Packages "Linux packages" ".deb" ".rpm" ".flatpak" ".flatpakref"
 commonBackup "." ~/Applications "Linux applications" ".appimage" ".x86_64"
-commonBackup "." ~/Applications/Windows "Windows applications" ".exe"
+commonBackup "." ~/Applications/Windows "Windows applications" ".exe" ".msi"
 commonBackup "." ~/Applications/MacOS "MacOS applications" ".app"
 commonBackup "." ~/Applications/Android "Android applications"
 commonBackup "." ~/Applications/Mozilla\ Extensions "Mozilla extensions" ".xpi"
@@ -126,7 +146,8 @@ commonBackup "." ~/Applications/Mozilla\ Extensions "Mozilla extensions" ".xpi"
 ################################################################################
 # DOCUMENTS ####################################################################
 commonBackup "." ~/Documents/Books "books" ".epub" ".pdf"
-commonBackup "." ~/Documents/Unsorted "documents" ".ctb" ".doc" ".rtf" ".txt" ".xlsx"
+commonBackup "." ~/Documents/Spreadsheets "spreadsheets" ".numbers" ".xls" ".xlsx"
+commonBackup "." ~/Documents/Unsorted "documents" ".asc" ".ctb" ".doc" ".docx" ".eml" ".rtf" ".txt"
 commonBackup "." ~/Documents/Webpages "webpages" ".html" ".url"
 #DISABLED BY DEFAULT, DELETE THE FOLLOWING '#' TO RE-ENABLE:
 #commonBackup "." ~/Documents/Scripts "scripts" ".applescript" ".css" ".php" ".py" ".sh"
@@ -134,20 +155,20 @@ commonBackup "." ~/Documents/Webpages "webpages" ".html" ".url"
 
 ################################################################################
 # PICTURES #####################################################################
-commonConvert "." "png" ".avif" ".bmp" ".webp"
+commonConvert "." ".png" ".avif" ".bmp" ".heic" ".m4a" ".webp"
 commonBackup "." ~/Pictures/Projects "graphical projects" ".kra" ".psd" ".xcf"
 commonBackup "." ~/Pictures/Unsorted "pictures" ".gif" ".jpg" ".jpeg" ".png" ".raw" ".svg" ".tiff"
 
 ################################################################################
 # AUDIO ########################################################################
-commonConvert "." "mp3" ".m4a" ".mpga"
+commonConvert "." ".mp3" ".mpga"
 commonBackup "." ~/Music/Sheet\ Music "sheet music files" ".mid" ".midi"
 commonBackup "." ~/Music/Soundfonts "soundfonts" ".sf2"
-commonBackup "." ~/Music/Unsorted "audio" ".aiff" ".flac" ".mp3" ".m4b" ".ogg" ".wav"
+commonBackup "." ~/Music/Unsorted "audio" ".aiff" ".flac" ".mp3" ".m4b" ".oga" ".ogg" ".wav"
 
 ################################################################################
 # VIDEO ########################################################################
-commonConvert "." "mp4" ".divx" ".flv" ".mov" ".mpg" ".webm"
+commonConvert "." ".mp4" ".divx" ".flv" ".mov" ".mpg" ".webm" ".wmv"
 commonBackup "." ~/Videos/Projects "video projects" ".flb" ".kdenlive" ".mlt" ".osp" ".ove" ".xges"
 commonBackup "." ~/Videos/Subtitles "subtitles" ".srt"
 commonBackup "." ~/Videos/Unsorted "videos" ".3gp" ".avi" ".m4v" ".mkv" ".mp4" ".ogx"
@@ -158,6 +179,7 @@ commonBackup "." ~/Games/Flash "Flash games" ".swf"
 commonBackup "." ~/Games/ROMs/Nintendo/NES "NES roms" ".nes"
 commonBackup "." ~/Games/ROMs/Nintendo/SNES "SNES roms" ".smc" ".sfc"
 commonBackup "." ~/Games/ROMs/Nintendo/N64 "N64 roms" ".n64" ".z64"
+commonBackup "." ~/Games/ROMs/Nintendo/GB "GB roms" ".gbc"
 commonBackup "." ~/Games/ROMs/Nintendo/GBA "GBA roms" ".gba"
 commonBackup "." ~/Games/ROMs/Nintendo/DS "DS roms" ".nds"
 commonBackup "." ~/Games/ROMs/Nintendo/3DS "3DS roms" ".3ds"
@@ -177,7 +199,7 @@ commonBackup "." ~/Downloads/Torrents "torrent files" ".torrent"
 ################################################################################
 # MISCELLANEOUS ################################################################
 commonBackup "." ~/Desktop/Dangerous\ Files "dangerous files" ".m4p"
-commonBackup "." ~/Downloads/Unconvertable "unconvertable files" ".graffle" ".icns" ".numbers"
+commonBackup "." ~/Downloads/Unconvertable "unconvertable files" ".graffle" ".icns" ".rsrc"
 
 ################################################################################
 # GLOB SETDOWN #################################################################
@@ -189,23 +211,28 @@ echo "COMPLETE!"
 cd || exit
 
 #TO-DO
+#Fix .m4a
 #Add support for .run files
 #Make fc-cache run only once
 #Fix sending large music files to ~/Music/SFX
+#Add .hqx support (convert to .wav with macutils)
+#Add .sit & .sit.data support (unpack with unar)
+#Remove local "source" variable
+#Add support for "vlcsnap"
 #ADDITIONS
-#Added support for .kra (Krita), .xcf (Gimp)
-#Added support for .flb, .kdenlive, .mlt, .osp, .ove, .xges (Video Projects)
-#Added support for .ogx (Videos)
-#Added support for .ydk (TCGs)
-#Added timestamps to logging
-#Moves sub-1Mb audio files to ~/Music/SFX
+#Adds date & time to filenames to prevent overwrites and backups
+#Added support for `.msi` (Applications/Windows)
+#Added support for `.oga` (Music)
+#Added support for `.heic` (Pictures)
+#Added support for `.wmv` (Videos)
+#Added support for `.asc`, `.docx`, `.eml` (Documents)
+#Added support for `.gbc` (Games/ROMS/Nintendo/GB)
+#Added `.rsrc` to Unconvertable
+#Added ~/Documents/Spreadsheets
+#Added support for `.numbers`, `.xls` (Documents/Spreadsheets)
 #CHANGES
-#Changed ~/Pictures/Photoshop to ~/Pictures/Projects
-#Silenced grep output & removed crontab job affirmation
-#Drop extensions from links
+#Converted files are now moved to Trash instead of deleted
 #REMOVED
 #FIXES
-#Skips handling files with `.part`s in the same directory
-#Restored font cache updating
-#Fix Linking and Executability
-#Fix Screenshots
+#Fixed `.avif` conversion
+#Files are now automaticaly trashed with `gio` so they can be manually restored
