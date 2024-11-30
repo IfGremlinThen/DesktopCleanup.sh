@@ -32,7 +32,7 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
     - `.asc`, `.ctb`, `.doc`, `.docx`, `.eml`, `.rtf`, `.txt` documents to _~/Documents/Unsorted_
     - `.html`, `.url` webpages to _~/Documents/Webpages_
   - Pictures
-    - `.kra`, `.psd`, `.xcf` projects to _~/Pictures/Projects
+    - `.kra`, `.psd`, `.xcf` projects to _~/Pictures/Projects_
     - "screenshots" to _~/Pictures/Unsorted/Screenshots_
     - `.heic`, `.gif`, `.jpg`, `.jpeg`, `.png`, `.raw`, `.svg`, `.tiff` pictures to _~/Pictures/Unsorted_
   - Music
