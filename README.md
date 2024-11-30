@@ -14,8 +14,10 @@ DesktopCleanup.sh moves all files it recognizes into separate filetype-specific 
 - **Renames** files with common foreign MacOS characters (requires `perl`)
 - **Renames** files with a timestamp to prevent overwrites.
 - **Installs** `.otf` & `.ttf` fonts to _~/.local/share/fonts_
+- **Converts** (requires `imagemagick`)
+  - `.avif`, `.heic`, `.webp` animations to `.gif`
 - **Converts** (requires `ffmpeg`)
-  - `.avif`, `.bmp`, `.webp` pictures to `.png`
+  - `.bmp` pictures to `.png`
   - `.m4a` & `.mpga` audio to `.wav`
   - `.divx`, `.flv`, `.mov`, `.mpg`, `.webm` video to `.mp4`
 - **Moves**
